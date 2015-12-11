@@ -6,32 +6,26 @@ FROM glassfish:4.1-jdk8
 # 作成者情報
 MAINTAINER 0.1 asashiho@mail.asa.yokohama
 
-# 環境の設定
+# 環境変数の設定
 ENV GLASSFISH_HOME /usr/local/glassfish4
 ENV PASSWORD glasspass
+ENV TMPFILE /tmp/passfile
+
+# 管理者パスワードとセキュリティの設定
+RUN echo "AS_ADMIN_PASSWORD=" > $TMPFILE && \
+    echo "AS_ADMIN_NEWPASSWORD=${PASSWORD}" >> $TMPFILE  && \
+    asadmin --user=admin --passwordfile=$TMPFILE change-admin-password --domain_name domain1 && \
+    asadmin start-domain && \
+    echo "AS_ADMIN_PASSWORD=${PASSWORD}" > $TMPFILE && \
+    asadmin --user=admin --passwordfile=$TMPFILE enable-secure-admin && \
+    asadmin --user=admin stop-domain && \
+    rm $TMPFILE
 
 # warコンテンツの配置
-
 ADD WebAPSample.war $GLASSFISH_HOME/glassfish/domains/domain1/autodeploy
 
-
-RUN echo "--- Setup the password file ---" && \
-    echo "AS_ADMIN_PASSWORD=" > /tmp/glassfishpwd && \
-    echo "AS_ADMIN_NEWPASSWORD=${PASSWORD}" >> /tmp/glassfishpwd  && \
-    echo "--- Enable DAS, change admin password, and secure admin access ---" && \
-    asadmin --user=admin --passwordfile=/tmp/glassfishpwd change-admin-password --domain_name domain1 && \
-    asadmin start-domain && \
-    echo "AS_ADMIN_PASSWORD=${PASSWORD}" > /tmp/glassfishpwd && \
-    asadmin --user=admin --passwordfile=/tmp/glassfishpwd enable-secure-admin && \
-    asadmin --user=admin stop-domain && \
-    rm /tmp/glassfishpwd
-
-
 # ポートの解放
-EXPOSE 8080
+EXPOSE 4848 8080 8181
 
 # glassfishの実行
-#MD ["asadmin","change-admin-password","admin","","password","password"]
-#CMD ["asadmin","enable-secure-admin","admin","password"]
-#CMD ["asadmin","stop-domain"]
-CMD ["asadmin","start-domain","--verbose"]
+CMD ["asadmin", "start-domain", "-v"]
