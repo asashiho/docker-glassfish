@@ -25,7 +25,7 @@ RUN echo "AS_ADMIN_PASSWORD=" > $TMPFILE && \
 ADD WebAPSample.war $GLASSFISH_HOME/glassfish/domains/domain1/autodeploy
 
 # ポートの解放
-EXPOSE 4848 8080 8181
+EXPOSE 4848 8080
 
 # glassfishの実行
 CMD ["asadmin", "start-domain", "-v"]
