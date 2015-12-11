@@ -19,7 +19,7 @@ http://（コンテナのアドレス）:8080/WebAPSample/index.xhtml
 
 Usage
 ------
-    $ docker pull asashiho/glassfish
+    $ docker pull asashiho/docker-glassfish
 
     $ docker run -d -p 4848:4848 -p 8080:8080 asashiho/glassfish
 
